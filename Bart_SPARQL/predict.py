@@ -179,11 +179,12 @@ def predict(args, kb, model, data, device, tokenizer):
         pred_sparql = [post_process(output) for output in outputs]
         with open(os.path.join(args.save_dir, 'predict.txt'), 'w') as f:
             for sparql in tqdm(pred_sparql):
-                pred_answer = get_sparql_answer(sparql, kb)
+                # pred_answer = get_sparql_answer(sparql, kb)
 
-                if pred_answer == None:
-                    pred_answer = 'None'
-                f.write(pred_answer + '\n')
+                # if pred_answer == None:
+                #     pred_answer = 'None'
+                # f.write(pred_answer + '\n')
+                f.write(sparql + '\n')
 
     #     for a, s in tqdm(zip(given_answer, pred_sparql)):
     #         pred_answer = get_sparql_answer(s, kb)
@@ -209,16 +210,16 @@ def train(args):
     train_loader = DataLoader(vocab_json, train_pt, args.batch_size, training=True)
     val_loader = DataLoader(vocab_json, val_pt, args.batch_size)
     vocab = train_loader.vocab
-    kb = DataForSPARQL(os.path.join(args.input_dir, 'kb.json'))
+    # kb = DataForSPARQL(os.path.join(args.input_dir, 'kb.json'))
     logging.info("Create model.........")
     config_class, model_class, tokenizer_class = (BartConfig, BartForConditionalGeneration, BartTokenizer)
     tokenizer = tokenizer_class.from_pretrained(args.ckpt)
     model = model_class.from_pretrained(args.ckpt)
     model = model.to(device)
     logging.info(model)
-    # predict(args, kb, model, val_loader, device, tokenizer)
+    predict(args, None, model, val_loader, device, tokenizer)
 
-    validate(args, kb, model, val_loader, device, tokenizer)
+    # validate(args, kb, model, val_loader, device, tokenizer)
     # vis(args, kb, model, val_loader, device, tokenizer)
 def main():
     parser = argparse.ArgumentParser()

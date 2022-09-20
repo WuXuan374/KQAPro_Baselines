@@ -140,3 +140,33 @@ python -m Bart_SPARQL.predict --input_dir <dir/of/processed/files> --ckpt <dir/o
 ## Checkpoints
 1. The pretrained Bart-base checkpoint without finetuning can be downloaded here [bart-base](https://cloud.tsinghua.edu.cn/f/3b59ec6c43034cfc8841/?dl=1)
 2. The checkpoint for finetuned Bart_SPARQL can be downloaded here [finetuned](https://cloud.tsinghua.edu.cn/f/1b9746dcd96b4fca870d/?dl=1)
+
+## 复现说明
+### preprocess
+- 构造 answer vocabulary
+- 数据集的编码
+    - question, sparql, choices, answers
+    - 测试集不含 sparql
+- 结论: 这部分代码与KB无关，应该是可以直接移植的
+```shell
+python -m Bart_SPARQL.preprocess --input_dir ./dataset --output_dir ./dataset/processed --model_name_or_path ./output/bart-base
+cp ./dataset/kb.json ./dataset/processed/kb.json
+```
+### train
+- 似乎也没有 evaluation, 也是固定 epochs 跑结果
+- 认为也是和 KB无关，可以直接移植的
+- 可以把训练跑起来，33min/epoch, 共 25epochs
+```shell
+python -m Bart_SPARQL.train --input_dir ./dataset/processed --output_dir ./output/KQAPro_ckpt/sparql_ckpt/ --model_name_or_path ./output/bart-base --save_dir ./output/KQAPro_ckpt/sparql_ckpt/ 
+```
+### predict
+- 对于生成内容的解码
+    - 存在后处理 post_process， 可能需要打补丁
+    - get_sparql_answer: 需要打补丁，执行 SPARQL 得到结果
+- DataForSPARQL: kb 相关，应该可以注释掉
+- validate(): 跑验证集的结果
+- predict(): 跑测试集的结果
+```shell
+CUDA_VISIBLE_DEVICES=2 python -m Bart_SPARQL.predict --input_dir ./dataset/processed/ --ckpt ./output/KQAPro_ckpt/sparql_ckpt/ --save_dir ./output/KQAPro_ckpt/sparql_ckpt/
+```
+- 生成 predict.txt

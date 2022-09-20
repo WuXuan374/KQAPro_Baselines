@@ -65,11 +65,11 @@ def train(args):
         scheduler.load_state_dict(torch.load(os.path.join(args.model_name_or_path, "scheduler.pt")))
 
     # Train!
-        logging.info("***** Running training *****")
-        logging.info("  Num examples = %d", len(train_loader.dataset))
-        logging.info("  Num Epochs = %d", args.num_train_epochs)
-        logging.info("  Gradient Accumulation steps = %d", args.gradient_accumulation_steps)
-        logging.info("  Total optimization steps = %d", t_total)
+    logging.info("***** Running training *****")
+    logging.info("  Num examples = %d", len(train_loader.dataset))
+    logging.info("  Num Epochs = %d", args.num_train_epochs)
+    logging.info("  Gradient Accumulation steps = %d", args.gradient_accumulation_steps)
+    logging.info("  Total optimization steps = %d", t_total)
 
     global_step = 0
     steps_trained_in_current_epoch = 0

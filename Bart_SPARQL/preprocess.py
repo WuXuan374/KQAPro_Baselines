@@ -10,7 +10,7 @@ from tqdm import tqdm
 import re
 
 from utils.misc import init_vocab
-from transformers import *
+from transformers import BartTokenizer
 
 
 
